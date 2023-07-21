@@ -105,9 +105,9 @@ public class NotePad {
 	            System.out.println(memoFile.getName());
 	        }
 	        Scanner scanner = new Scanner(System.in);
-	        System.out.println("메모의 제목을 입력");
-	        System.out.println("예) 제목.txt");
-	        String memoTitle = scanner.nextLine();
+	        System.out.println("읽을 메모의 제목을 입력");
+	        System.out.println("예) memo1");
+	        String memoTitle = scanner.nextLine() + ".txt";
 
 	        readMemoContent(memoTitle);
 	    } else {
@@ -138,23 +138,67 @@ public class NotePad {
 	}
 
 
-	private static void updateMemo() {
-		try {
-			System.out.println("메모 수정 새로운 내용 입력");
-			Scanner scanner = new Scanner(System.in);
-			String content = scanner.nextLine();
-			
-			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("memo.txt"));
-			bufferedWriter.write(content);
-			bufferedWriter.close();
-			
-			System.out.println("메모 수정 완료");
-		}
-		catch(IOException e) {
-			System.out.println("메모 수정 중 오류 발생");
-			e.printStackTrace();
-		}
-	}
+    private static void updateMemo() {
+        Scanner scanner = new Scanner(System.in);
+
+        // 저장된 메모 목록 출력
+        File memoDirectory = new File(".");
+        File[] memoFiles = memoDirectory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith("memo") && name.endsWith(".txt");
+            }
+        });
+
+        if (memoFiles != null && memoFiles.length > 0) {
+            System.out.println("저장된 메모 목록:");
+            for (File memoFile : memoFiles) {
+                System.out.println(memoFile.getName());
+            }
+        } else {
+            System.out.println("저장된 메모가 없음");
+            return;
+        }
+
+        // 메모 제목 입력
+        System.out.println("수정할 메모의 제목을 입력:");
+        System.out.println("예) memo1");
+        String memoTitle = scanner.nextLine();
+        String fileName = memoTitle + ".txt";
+        File memoFile = new File(fileName);
+
+        if (!memoFile.exists()) {
+            System.out.println("메모를 찾을 수 없음");
+            return;
+        }
+
+        // 기존 메모 내용 출력
+        System.out.println("현재 메모 내용:");
+        readMemoContent(fileName);
+
+        // 메모 수정
+        try {
+            System.out.println("새로운 메모 내용을 입력:");
+            System.out.println("엔터키 두번 입력 시 저장");
+            StringBuilder contentBuilder = new StringBuilder();
+
+            String line;
+            while (!(line = scanner.nextLine()).isEmpty()) {
+                contentBuilder.append(line);
+                contentBuilder.append("\n");
+            }
+            String newContent = contentBuilder.toString();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(memoFile));
+            writer.write(newContent);
+            writer.close();
+
+            System.out.println("메모가 수정완료");
+        } catch (IOException e) {
+            System.out.println("메모 수정 중 오류 발생");
+            e.printStackTrace();
+        }
+    }
 	private static void deleteMemo() {
 	    File memoDirectory = new File("C:\\SJG\\SJG\\java\\workspace\\JavaStudy-20221211-SJG");
 	    File[] memoFiles = memoDirectory.listFiles(new FilenameFilter() {
@@ -171,8 +215,8 @@ public class NotePad {
 	        }
 	        Scanner scanner = new Scanner(System.in);
 	        System.out.println("메모 제목 입력");
-	        System.out.println("예) 제목.txt");
-	        String memoTitle = scanner.nextLine();
+	        System.out.println("예) memo1");
+	        String memoTitle = scanner.nextLine() + ".txt";
 	        
 	        File file = new File(memoTitle);
 			
